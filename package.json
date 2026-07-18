@@ -12,7 +12,7 @@
         "build:web": "next build",
         "start": "node start.mjs",
         "start:server": "node dist/server/index.js",
-        "start:web": "next start -p ${WEB_PORT:-3000}"
+        "start:web": "next start"
     },
     "dependencies": {
         "next": "^15.3.0",
