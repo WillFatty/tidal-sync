@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const WS_SERVER = process.env.WS_SERVER || "https://tidalsyncapi.hexium.cc";
+const WS_SERVER = process.env.WS_SERVER || "http://localhost:24124";
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
