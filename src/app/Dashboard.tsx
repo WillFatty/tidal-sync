@@ -123,7 +123,7 @@ function RoomCard({ room, onClick, index }: { room: ActiveRoom; onClick: () => v
     return (
         <button
             onClick={onClick}
-            className={`group surface animate-fade-up text-left w-full cursor-pointer rounded-2xl p-6 transition-all duration-300 hover:border-[rgba(232,93,122,0.3)] hover:bg-[rgba(36,20,26,0.9)] stagger-${Math.min(index + 1, 3)} ${
+            className={`group surface animate-fade-up text-left w-full cursor-pointer rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_30px_70px_-24px_rgba(255,92,134,0.45)] stagger-${Math.min(index + 1, 3)} ${
                 room.playing ? "surface-live" : ""
             }`}
         >
@@ -441,7 +441,7 @@ function RoomDetailView({ roomId, onBack }: { roomId: string; onBack: () => void
                             setAutoScroll(true);
                             if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight;
                         }}
-                        className="w-full bg-[var(--accent-soft)] py-2 text-xs text-[var(--accent)] transition-colors hover:bg-[rgba(232,93,122,0.2)]"
+                        className="w-full bg-[var(--accent-soft)] py-2 text-xs text-[var(--accent)] transition-colors hover:bg-[rgba(255,92,134,0.2)]"
                     >
                         Jump to latest
                     </button>
@@ -521,7 +521,7 @@ function CopyField({ value }: { value: string }) {
             <button
                 type="button"
                 onClick={copy}
-                className="shrink-0 border-l border-[var(--line)] px-3.5 text-[11px] font-medium text-[var(--accent)] transition-colors hover:bg-[rgba(232,93,122,0.1)]"
+                className="shrink-0 border-l border-[var(--line)] px-3.5 text-[11px] font-medium text-[var(--accent)] transition-colors hover:bg-[rgba(255,92,134,0.1)]"
             >
                 {copied ? "Copied" : "Copy"}
             </button>
@@ -531,7 +531,7 @@ function CopyField({ value }: { value: string }) {
 
 function StepBadge({ n }: { n: number }) {
     return (
-        <span className="relative z-10 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[rgba(232,93,122,0.18)] text-[var(--accent)] ring-1 ring-[rgba(232,93,122,0.35)]">
+        <span className="relative z-10 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[rgba(255,92,134,0.18)] text-[var(--accent)] ring-1 ring-[rgba(255,92,134,0.35)]">
             <span className="block text-[12px] font-bold leading-none tabular-nums translate-y-[0.5px]">
                 {n}
             </span>
@@ -651,7 +651,7 @@ function InstallModal({ onClose }: { onClose: () => void }) {
                 aria-labelledby="install-title"
             >
                 <div className="relative shrink-0 border-b border-[var(--line)] px-7 pb-4 pt-6">
-                    <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-[rgba(232,93,122,0.12)] to-transparent" />
+                    <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-[rgba(255,92,134,0.12)] to-transparent" />
                     <div className="relative flex items-start justify-between gap-4">
                         <div>
                             <h3
@@ -684,7 +684,7 @@ function InstallModal({ onClose }: { onClose: () => void }) {
                             <li key={step.title} className="relative flex gap-3.5 pb-5 last:pb-0">
                                 {i < steps.length - 1 && (
                                     <span
-                                        className="absolute left-[15px] top-8 bottom-0 w-px bg-gradient-to-b from-[rgba(232,93,122,0.35)] to-[rgba(232,93,122,0.06)]"
+                                        className="absolute left-[15px] top-8 bottom-0 w-px bg-gradient-to-b from-[rgba(255,92,134,0.35)] to-[rgba(255,92,134,0.06)]"
                                         aria-hidden
                                     />
                                 )}
@@ -758,7 +758,7 @@ export function Dashboard() {
                     </p>
                     <button
                         onClick={() => setShowInstall(true)}
-                        className="mt-5 inline-flex items-center gap-2 rounded-full bg-[rgba(232,93,122,0.15)] px-5 py-2 text-sm font-medium text-[var(--accent)] ring-1 ring-[rgba(232,93,122,0.28)] transition-all hover:bg-[rgba(232,93,122,0.25)] hover:ring-[rgba(232,93,122,0.5)]"
+                        className="mt-5 inline-flex items-center gap-2 rounded-full bg-[rgba(255,92,134,0.15)] px-5 py-2 text-sm font-medium text-[var(--accent)] ring-1 ring-[rgba(255,92,134,0.28)] transition-all hover:bg-[rgba(255,92,134,0.25)] hover:ring-[rgba(255,92,134,0.5)]"
                     >
                         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
@@ -872,7 +872,7 @@ export function Dashboard() {
                             ].map((step) => (
                                 <li key={step.n} className="group relative">
                                     <div className="mb-5 flex items-center gap-3">
-                                        <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-[rgba(232,93,122,0.15)] text-[var(--accent)] ring-1 ring-[rgba(232,93,122,0.28)] transition-all group-hover:bg-[rgba(232,93,122,0.25)] group-hover:ring-[rgba(232,93,122,0.5)] leading-none [&>svg]:block">
+                                        <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-[rgba(255,92,134,0.15)] text-[var(--accent)] ring-1 ring-[rgba(255,92,134,0.28)] transition-all group-hover:bg-[rgba(255,92,134,0.25)] group-hover:ring-[rgba(255,92,134,0.5)] leading-none [&>svg]:block">
                                             {step.icon}
                                         </span>
                                         <span

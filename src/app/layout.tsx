@@ -21,13 +21,23 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-    title: "TidalSync",
-    description: "Listen to TIDAL together",
+    title: "TidalSync — Listen to TIDAL together, in sync",
+    description: "Real-time, locked-in TIDAL playback with friends. Create a room, share the code, and listen together.",
+};
+
+export const viewport = {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+    themeColor: "#08060a",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
-        <html lang="en" className={`${manrope.variable} ${figtree.variable} ${jetbrains.variable}`}>
+        <html
+            lang="en"
+            className={`bg-[var(--ink)] ${manrope.variable} ${figtree.variable} ${jetbrains.variable}`}
+        >
             <body
                 className="min-h-screen antialiased"
                 style={{ fontFamily: "var(--font-body), system-ui, sans-serif" }}
