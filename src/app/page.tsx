@@ -338,7 +338,7 @@ function RoomDetailView({ roomId, onBack }: { roomId: string; onBack: () => void
                     </div>
                 </div>
 
-                {detail.hostState?.trackTitle && (
+                {typeof detail.hostState?.trackTitle === "string" && detail.hostState.trackTitle && (
                     <div className="mb-5 flex items-center gap-3 rounded-xl bg-black/25 px-3.5 py-3">
                         {detail.hostState.coverUrl ? (
                             <img
@@ -353,9 +353,9 @@ function RoomDetailView({ roomId, onBack }: { roomId: string; onBack: () => void
                             <span className="block truncate text-sm text-[var(--foam)]">
                                 {String(detail.hostState.trackTitle)}
                             </span>
-                            {detail.hostState.trackArtists && Array.isArray(detail.hostState.trackArtists) && detail.hostState.trackArtists.length > 0 && (
+                            {Array.isArray(detail.hostState.trackArtists) && (detail.hostState.trackArtists as string[]).length > 0 && (
                                 <span className="block truncate text-xs text-[var(--muted)]">
-                                    {detail.hostState.trackArtists.join(", ")}
+                                    {(detail.hostState.trackArtists as string[]).join(", ")}
                                 </span>
                             )}
                         </div>
@@ -497,10 +497,218 @@ function StatusStrip({
     );
 }
 
+function CopyField({ value }: { value: string }) {
+    const [copied, setCopied] = useState(false);
+
+    const copy = async () => {
+        try {
+            await navigator.clipboard.writeText(value);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 1600);
+        } catch {
+            /* ignore */
+        }
+    };
+
+    return (
+        <div className="mt-2.5 flex items-stretch overflow-hidden rounded-xl border border-[var(--line)] bg-black/35">
+            <code
+                className="min-w-0 flex-1 px-3.5 py-2.5 font-mono text-[11px] leading-relaxed text-[var(--foam)] break-all"
+                style={{ fontFamily: "var(--font-mono), ui-monospace, monospace" }}
+            >
+                {value}
+            </code>
+            <button
+                type="button"
+                onClick={copy}
+                className="shrink-0 border-l border-[var(--line)] px-3.5 text-[11px] font-medium text-[var(--accent)] transition-colors hover:bg-[rgba(232,93,122,0.1)]"
+            >
+                {copied ? "Copied" : "Copy"}
+            </button>
+        </div>
+    );
+}
+
+function StepBadge({ n }: { n: number }) {
+    return (
+        <span className="relative z-10 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[rgba(232,93,122,0.18)] text-[var(--accent)] ring-1 ring-[rgba(232,93,122,0.35)]">
+            <span className="block text-[12px] font-bold leading-none tabular-nums translate-y-[0.5px]">
+                {n}
+            </span>
+        </span>
+    );
+}
+
+function InstallModal({ onClose }: { onClose: () => void }) {
+    useEffect(() => {
+        const onKey = (e: KeyboardEvent) => {
+            if (e.key === "Escape") onClose();
+        };
+        window.addEventListener("keydown", onKey);
+        return () => window.removeEventListener("keydown", onKey);
+    }, [onClose]);
+
+    const steps = [
+        {
+            title: "Install TidaLuna",
+            body: (
+                <p>
+                    Follow the guide at{" "}
+                    <a
+                        href="https://github.com/Inrixia/TidaLuna"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-medium text-[var(--accent)] underline decoration-[var(--accent)]/40 underline-offset-2 transition-colors hover:decoration-[var(--accent)]"
+                    >
+                        github.com/Inrixia/TidaLuna
+                    </a>{" "}
+                    for TIDAL Desktop.
+                </p>
+            ),
+        },
+        {
+            title: "Add the Plugin Store",
+            body: (
+                <>
+                    <p>
+                        In TidaLuna open{" "}
+                        <span className="font-medium text-[var(--foam)]">Settings → Plugin Store</span>{" "}
+                        and add this store URL:
+                    </p>
+                    <CopyField value="https://github.com/WillFatty/luna-plugins/releases/download/latest/store.json" />
+                </>
+            ),
+        },
+        {
+            title: "Install TidalSync",
+            body: (
+                <p>
+                    Search for{" "}
+                    <span
+                        className="rounded bg-white/5 px-1.5 py-0.5 font-mono text-[12px] text-[var(--foam)]"
+                        style={{ fontFamily: "var(--font-mono), ui-monospace, monospace" }}
+                    >
+                        TidalSync
+                    </span>{" "}
+                    and click <span className="font-medium text-[var(--foam)]">Install</span>.
+                </p>
+            ),
+        },
+        {
+            title: "Enable the Plugin",
+            body: (
+                <p>
+                    Open <span className="font-medium text-[var(--foam)]">Plugins</span> in TidaLuna and
+                    make sure TidalSync is turned on.
+                </p>
+            ),
+        },
+        {
+            title: "Set the Server",
+            body: (
+                <>
+                    <p>In TidalSync settings, set the server URL to:</p>
+                    <CopyField value="https://tidalsyncapi.hexium.cc/" />
+                    <p className="mt-2.5">
+                        Or{" "}
+                        <a
+                            href="https://github.com/WillFatty/tidal-sync"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-medium text-[var(--accent)] underline decoration-[var(--accent)]/40 underline-offset-2 transition-colors hover:decoration-[var(--accent)]"
+                        >
+                            host your own
+                        </a>
+                        . Optionally set a{" "}
+                        <span className="font-medium text-[var(--foam)]">Display Name</span> so others
+                        know who you are.
+                    </p>
+                </>
+            ),
+        },
+        {
+            title: "Connect",
+            body: (
+                <p>
+                    Click the <span className="font-medium text-[var(--foam)]">link icon</span> in the
+                    playbar to create or join a room. You&apos;re live.
+                </p>
+            ),
+        },
+    ];
+
+    return (
+        <div
+            className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto p-4 animate-fade-up [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            onClick={onClose}
+        >
+            <div className="absolute inset-0 bg-black/70 backdrop-blur-md" />
+            <div
+                className="surface relative z-10 w-full max-w-lg overflow-hidden rounded-3xl [box-shadow:0_24px_80px_rgba(0,0,0,0.55)]"
+                onClick={(e) => e.stopPropagation()}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="install-title"
+            >
+                <div className="relative shrink-0 border-b border-[var(--line)] px-7 pb-4 pt-6">
+                    <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-[rgba(232,93,122,0.12)] to-transparent" />
+                    <div className="relative flex items-start justify-between gap-4">
+                        <div>
+                            <h3
+                                id="install-title"
+                                className="text-xl font-bold tracking-tight text-[var(--foam)]"
+                                style={{ fontFamily: "var(--font-display), sans-serif" }}
+                            >
+                                Install TidalSync
+                            </h3>
+                            <p className="mt-1 text-sm text-[var(--mist)]">
+                                Six steps. Then listen together.
+                            </p>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            aria-label="Close"
+                            className="grid h-9 w-9 shrink-0 place-items-center rounded-full text-[var(--muted)] transition-colors hover:bg-white/5 hover:text-[var(--foam)]"
+                        >
+                            <svg className="block h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div className="px-7 py-5">
+                    <ol className="relative space-y-0">
+                        {steps.map((step, i) => (
+                            <li key={step.title} className="relative flex gap-3.5 pb-5 last:pb-0">
+                                {i < steps.length - 1 && (
+                                    <span
+                                        className="absolute left-[15px] top-8 bottom-0 w-px bg-gradient-to-b from-[rgba(232,93,122,0.35)] to-[rgba(232,93,122,0.06)]"
+                                        aria-hidden
+                                    />
+                                )}
+                                <StepBadge n={i + 1} />
+                                <div className="min-w-0 flex-1 pt-0.5 text-sm leading-relaxed text-[var(--mist)]">
+                                    <p className="mb-1 text-[15px] font-semibold text-[var(--foam)]">
+                                        {step.title}
+                                    </p>
+                                    {step.body}
+                                </div>
+                            </li>
+                        ))}
+                    </ol>
+                </div>
+            </div>
+        </div>
+    );
+}
+
 export default function Dashboard() {
     const [status, setStatus] = useState<ServerStatus | null>(null);
     const [fetchTime, setFetchTime] = useState<number>(0);
     const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
+    const [showInstall, setShowInstall] = useState(false);
 
     const fetchStatus = useCallback(async () => {
         try {
@@ -548,6 +756,15 @@ export default function Dashboard() {
                     <p className="mx-auto max-w-md text-lg font-light tracking-wide text-[var(--mist)]">
                         Listen to TIDAL together, in sync
                     </p>
+                    <button
+                        onClick={() => setShowInstall(true)}
+                        className="mt-5 inline-flex items-center gap-2 rounded-full bg-[rgba(232,93,122,0.15)] px-5 py-2 text-sm font-medium text-[var(--accent)] ring-1 ring-[rgba(232,93,122,0.28)] transition-all hover:bg-[rgba(232,93,122,0.25)] hover:ring-[rgba(232,93,122,0.5)]"
+                    >
+                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                        </svg>
+                        Install Plugin
+                    </button>
                 </header>
 
                 {!selectedRoom && (
@@ -677,6 +894,8 @@ export default function Dashboard() {
                     TidalSync — TIDAL together, in sync
                 </p>
             </div>
+
+            {showInstall && <InstallModal onClose={() => setShowInstall(false)} />}
         </div>
     );
 }

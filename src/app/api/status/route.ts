@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-const WS_SERVER = process.env.WS_SERVER || "https://testapi.wtfm.space";
+const WS_SERVER = process.env.WS_SERVER || "https://tidalsyncapi.hexium.cc";
 
 export async function GET() {
     try {

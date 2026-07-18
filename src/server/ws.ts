@@ -91,13 +91,27 @@ const handleMessage = (client: SyncClient, raw: string) => {
                 type: "joined",
                 roomId: joinedRoom.id,
                 role: "guest",
+                hostDisplayName: joinedRoom.host.displayName,
             });
             send(client.ws, { type: "host_sync", state: joinedRoom.hostState });
-            send(joinedRoom.host.ws, {
-                type: "guest_joined",
+            const guestJoinedMsg = {
+                type: "guest_joined" as const,
                 displayName: client.displayName,
                 guestCount: joinedRoom.guests.size,
-            });
+            };
+            send(joinedRoom.host.ws, guestJoinedMsg);
+            for (const [, g] of joinedRoom.guests) {
+                if (g.id !== client.id) send(g.ws, guestJoinedMsg);
+            }
+            for (const [, g] of joinedRoom.guests) {
+                if (g.id !== client.id) {
+                    send(client.ws, {
+                        type: "guest_joined",
+                        displayName: g.displayName,
+                        guestCount: joinedRoom.guests.size,
+                    });
+                }
+            }
 
             logRoomMessage(joinedRoom.id, {
                 ts: Date.now(),
@@ -121,11 +135,15 @@ const handleMessage = (client: SyncClient, raw: string) => {
                 cleanupRoomLog(room.id);
                 log(`Host left room ${room.id} — room dissolved`);
             } else {
-                send(room.host.ws, {
-                    type: "guest_left",
+                const guestLeftMsg = {
+                    type: "guest_left" as const,
                     displayName: client.displayName,
                     guestCount: guestCount - 1,
-                });
+                };
+                send(room.host.ws, guestLeftMsg);
+                for (const [, g] of room.guests) {
+                    send(g.ws, guestLeftMsg);
+                }
                 logRoomMessage(room.id, {
                     ts: Date.now(),
                     dir: "out",
@@ -239,11 +257,15 @@ const handleConnection = (ws: WebSocket, _req: IncomingMessage) => {
                     guest.ws.close(1000, "Host disconnected");
                 }
             } else {
-                send(room.host.ws, {
-                    type: "guest_left",
+                const guestLeftMsg = {
+                    type: "guest_left" as const,
                     displayName: client.displayName,
                     guestCount: room.guests.size - 1,
-                });
+                };
+                send(room.host.ws, guestLeftMsg);
+                for (const [, g] of room.guests) {
+                    if (g.id !== client.id) send(g.ws, guestLeftMsg);
+                }
             }
         }
         removeClient(client);

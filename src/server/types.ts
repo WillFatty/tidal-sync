@@ -56,7 +56,7 @@ export type ClientMessage =
 
 export type ServerMessage =
     | { type: "created"; roomId: string }
-    | { type: "joined"; roomId: string; role: "host" | "guest" }
+    | { type: "joined"; roomId: string; role: "host" | "guest"; hostDisplayName: string }
     | { type: "error"; error: string }
     | { type: "state"; state: Partial<PlaybackState> }
     | { type: "command"; command: SyncCommand }
