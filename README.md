@@ -1,24 +1,35 @@
 # TidalSync
 
-Listen to [TIDAL](https://tidal.com) together in real time. A WebSocket sync server plus a Next.js dashboard, used with the [TidaLuna](https://github.com/Inrixia/TidaLuna) desktop plugin.
+Listen to [TIDAL](https://tidal.com) together in real time. This repo is the **sync server** and **web dashboard**. The TidaLuna client plugin lives in a separate repository.
+
+## Related repositories
+
+| Repo | What it is |
+| --- | --- |
+| **[WillFatty/tidal-sync](https://github.com/WillFatty/tidal-sync)** (this repo) | WebSocket sync server + Next.js dashboard |
+| **[WillFatty/luna-plugins](https://github.com/WillFatty/luna-plugins)** | TidaLuna plugins, including **TidalSync** — install via the plugin store release |
+| **[Inrixia/TidaLuna](https://github.com/Inrixia/TidaLuna)** | TIDAL Desktop plugin host required to run the client |
+
+You need all three pieces for a full setup: TidaLuna → TidalSync plugin (`luna-plugins`) → this server (and optionally the dashboard).
 
 ## Architecture
 
-| Piece | Role | Default port |
-| --- | --- | --- |
-| **Server** (`src/server`) | WebSocket rooms, playback sync, REST/SSE status APIs, optional static files | `24124` |
-| **Web** (`src/app`) | Live room dashboard (proxies API via `WS_SERVER`) | `3000` |
-| **Plugin** (TidaLuna) | Host/guest clients that create rooms and stay in sync | — |
+| Piece | Repo | Role | Default port |
+| --- | --- | --- | --- |
+| **Server** (`src/server`) | tidal-sync | WebSocket rooms, playback sync, REST/SSE status APIs | `24124` |
+| **Web** (`src/app`) | tidal-sync | Live room dashboard (proxies API via `WS_SERVER`) | `3000` |
+| **Plugin** | [luna-plugins](https://github.com/WillFatty/luna-plugins) | Host/guest client inside TidaLuna | — |
 
 ```
-TidaLuna clients  ──WebSocket──►  TidalSync Server
-Dashboard browser ──HTTP API──►  Next.js Web  ──proxy──►  TidalSync Server
+TidaLuna + TidalSync plugin  ──WebSocket──►  TidalSync Server (this repo)
+Dashboard browser            ──HTTP API──►  Next.js Web      ──proxy──►  Server
 ```
 
 ## Requirements
 
 - Node.js 20+ (22 recommended)
 - npm
+- [TidaLuna](https://github.com/Inrixia/TidaLuna) + the TidalSync plugin from [luna-plugins](https://github.com/WillFatty/luna-plugins) (for actual listening)
 
 ## Local development
 
@@ -58,18 +69,22 @@ npm run start:web      # next start
 | `WS_SERVER` | `https://tidalsyncapi.hexium.cc` | Base URL of the TidalSync API/WebSocket server (no path) |
 | `PORT` | Next default | Port for `next start` |
 
-## Plugin setup (TidaLuna)
+## Plugin setup (separate repo)
+
+The client is **not** in this repository. It ships from **[WillFatty/luna-plugins](https://github.com/WillFatty/luna-plugins)** as a TidaLuna store package.
 
 1. Install [TidaLuna](https://github.com/Inrixia/TidaLuna) for TIDAL Desktop.
-2. In TidaLuna: **Settings → Plugin Store**, add:
+2. In TidaLuna: **Settings → Plugin Store**, add the store URL from luna-plugins releases:
    ```
    https://github.com/WillFatty/luna-plugins/releases/download/latest/store.json
    ```
 3. Search for **TidalSync** and install it.
 4. Enable the plugin under **Plugins**.
-5. In TidalSync settings, set the server URL (hosted example: `https://tidalsyncapi.hexium.cc/`) or point it at your own server.
+5. In TidalSync settings, set the server URL (hosted example: `https://tidalsyncapi.hexium.cc/`) or point it at an instance of **this** server.
 6. Optionally set a **Display Name**.
 7. Click the **link icon** in the playbar to create or join a room.
+
+For plugin source, issues, and releases, use [luna-plugins](https://github.com/WillFatty/luna-plugins). For server/dashboard issues, use this repo.
 
 The dashboard’s **Install Plugin** button walks through the same steps.
 
