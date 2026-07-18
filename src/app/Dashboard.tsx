@@ -99,11 +99,8 @@ function EmptyState() {
     return (
         <div className="flex flex-col items-center justify-center py-28 px-6 animate-fade-up">
             <div className="animate-float mb-8">
-                <div className="relative flex h-24 w-24 items-center justify-center">
-                    <div className="absolute inset-0 rounded-full bg-[var(--accent)]/10 blur-2xl" />
-                    <div className="relative surface grid h-20 w-20 place-items-center rounded-full leading-none">
-                        <WaveMark />
-                    </div>
+                <div className="surface grid h-20 w-20 place-items-center rounded-2xl leading-none">
+                    <WaveMark />
                 </div>
             </div>
             <h3
@@ -123,7 +120,7 @@ function RoomCard({ room, onClick, index }: { room: ActiveRoom; onClick: () => v
     return (
         <button
             onClick={onClick}
-            className={`group surface animate-fade-up text-left w-full cursor-pointer rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_30px_70px_-24px_rgba(255,92,134,0.45)] stagger-${Math.min(index + 1, 3)} ${
+            className={`group surface card-lift animate-fade-up text-left w-full cursor-pointer rounded-2xl p-6 stagger-${Math.min(index + 1, 3)} ${
                 room.playing ? "surface-live" : ""
             }`}
         >
@@ -156,7 +153,7 @@ function RoomCard({ room, onClick, index }: { room: ActiveRoom; onClick: () => v
                 </div>
             </div>
 
-            <div className="mb-5 flex items-center gap-3 rounded-xl bg-black/20 px-3.5 py-2.5">
+            <div className="surface-2 mb-5 flex items-center gap-3 rounded-xl px-3.5 py-2.5">
                 {room.coverUrl ? (
                     <img
                         src={room.coverUrl}
@@ -339,7 +336,7 @@ function RoomDetailView({ roomId, onBack }: { roomId: string; onBack: () => void
                 </div>
 
                 {typeof detail.hostState?.trackTitle === "string" && detail.hostState.trackTitle && (
-                    <div className="mb-5 flex items-center gap-3 rounded-xl bg-black/25 px-3.5 py-3">
+                    <div className="surface-2 mb-5 flex items-center gap-3 rounded-xl px-3.5 py-3">
                         {detail.hostState.coverUrl ? (
                             <img
                                 src={String(detail.hostState.coverUrl)}
@@ -404,7 +401,7 @@ function RoomDetailView({ roomId, onBack }: { roomId: string; onBack: () => void
                     ref={logRef}
                     onScroll={handleScroll}
                     className="log-scroll overflow-y-auto font-mono text-[11px] leading-relaxed"
-                    style={{ height: "500px", background: "rgba(0,0,0,0.28)" }}
+                    style={{ height: "500px", background: "var(--bg)" }}
                 >
                     {messages.length === 0 ? (
                         <div className="p-8 text-center text-[var(--muted)]">No messages yet…</div>
@@ -465,32 +462,36 @@ function StatusStrip({
     fetchTime: number;
 }) {
     const items = [
-        { label: isOnline ? "Online" : "Offline", value: null as string | null, live: isOnline },
-        { label: "Rooms", value: String(rooms) },
-        ...(isOnline ? [{ label: "Uptime", value: formatUptime(uptime) }] : []),
+        { label: "Status", value: isOnline ? "Online" : "Offline", live: true },
+        { label: "Active rooms", value: String(rooms) },
         { label: "Listeners", value: String(listeners) },
-        ...(isOnline ? [{ label: "Ping", value: `${fetchTime}ms` }] : []),
+        ...(isOnline
+            ? [
+                  { label: "Uptime", value: formatUptime(uptime) },
+                  { label: "Ping", value: `${fetchTime}ms` },
+              ]
+            : []),
     ];
 
     return (
-        <div className="surface animate-fade-up stagger-2 mx-auto mb-14 flex max-w-3xl flex-wrap items-center justify-center gap-x-8 gap-y-3 rounded-2xl px-6 py-4">
-            {items.map((item, i) => (
-                <div key={item.label} className="flex items-center gap-2.5">
-                    {i === 0 && (
-                        <span
-                            className={`h-1.5 w-1.5 rounded-full ${
-                                item.live ? "bg-[var(--accent)]" : "bg-[var(--danger)]"
-                            }`}
-                        />
-                    )}
-                    <span className="text-[11px] uppercase tracking-[0.14em] text-[var(--muted)]">
+        <div className="animate-fade-up stagger-2 mb-16 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+            {items.map((item) => (
+                <div key={item.label} className="surface rounded-2xl px-5 py-4">
+                    <div className="mb-2 text-[11px] uppercase tracking-[0.16em] text-[var(--muted)]">
                         {item.label}
-                    </span>
-                    {item.value !== null && (
-                        <span className="text-sm font-medium tabular-nums text-[var(--foam)]">
+                    </div>
+                    <div className="flex items-center gap-2">
+                        {item.live && (
+                            <span
+                                className={`h-2 w-2 rounded-full ${
+                                    isOnline ? "bg-[var(--success)]" : "bg-[var(--danger)]"
+                                }`}
+                            />
+                        )}
+                        <span className="text-xl font-semibold tabular-nums text-[var(--foam)]">
                             {item.value}
                         </span>
-                    )}
+                    </div>
                 </div>
             ))}
         </div>
@@ -511,7 +512,7 @@ function CopyField({ value }: { value: string }) {
     };
 
     return (
-        <div className="mt-2.5 flex items-stretch overflow-hidden rounded-xl border border-[var(--line)] bg-black/35">
+        <div className="surface-2 mt-2.5 flex items-stretch overflow-hidden rounded-xl">
             <code
                 className="min-w-0 flex-1 px-3.5 py-2.5 font-mono text-[11px] leading-relaxed text-[var(--foam)] break-all"
                 style={{ fontFamily: "var(--font-mono), ui-monospace, monospace" }}
@@ -642,9 +643,9 @@ function InstallModal({ onClose }: { onClose: () => void }) {
             className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto p-4 animate-fade-up [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             onClick={onClose}
         >
-            <div className="absolute inset-0 bg-black/70 backdrop-blur-md" />
+            <div className="absolute inset-0 bg-[rgba(6,6,8,0.88)]" />
             <div
-                className="surface relative z-10 w-full max-w-lg overflow-hidden rounded-3xl [box-shadow:0_24px_80px_rgba(0,0,0,0.55)]"
+                className="surface relative z-10 w-full max-w-lg overflow-hidden rounded-3xl [box-shadow:0_24px_80px_rgba(0,0,0,0.6)]"
                 onClick={(e) => e.stopPropagation()}
                 role="dialog"
                 aria-modal="true"
@@ -734,37 +735,78 @@ export function Dashboard() {
 
     return (
         <div className="relative min-h-screen">
-            <div className="ocean-field" aria-hidden>
-                <div className="ocean-wave" style={{ top: "15%" }} />
-                <div className="ocean-wave" />
-                <div className="ocean-wave" />
-            </div>
+            <div className="grid-field" aria-hidden />
 
-            <div className="relative z-10 mx-auto max-w-6xl px-6 pb-20 pt-16 md:pt-24">
-                <header className="mb-12 text-center animate-fade-up">
-                    <div className="mb-6 flex justify-center">
-                        <div className="relative flex h-14 w-14 items-center justify-center">
-                            <div className="absolute inset-0 rounded-full bg-[var(--accent)]/20 blur-xl" />
-                            <div className="relative surface grid h-12 w-12 place-items-center rounded-full leading-none">
-                                <WaveMark />
-                            </div>
-                        </div>
+            <nav className="nav-bar sticky top-0 z-40">
+                <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3.5">
+                    <div className="flex items-center gap-2.5">
+                        <span className="grid h-9 w-9 place-items-center rounded-xl bg-[var(--accent-soft)] leading-none">
+                            <WaveMark />
+                        </span>
+                        <span
+                            className="text-lg font-bold tracking-tight text-[var(--foam)]"
+                            style={{ fontFamily: "var(--font-display), sans-serif" }}
+                        >
+                            TidalSync
+                        </span>
                     </div>
-                    <h1 className="brand-mark mb-5 text-6xl font-extrabold leading-[0.95] md:text-7xl lg:text-8xl">
-                        TidalSync
+                    <div className="flex items-center gap-2">
+                        <span className="hidden items-center gap-2 rounded-full border border-[var(--line)] px-3 py-1.5 text-xs sm:flex">
+                            <span
+                                className={`h-1.5 w-1.5 rounded-full ${
+                                    isOnline ? "bg-[var(--success)]" : "bg-[var(--danger)]"
+                                }`}
+                            />
+                            <span className="text-[var(--mist)]">{isOnline ? "Online" : "Offline"}</span>
+                        </span>
+                        <button
+                            onClick={() => setShowInstall(true)}
+                            className="btn-accent inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm"
+                        >
+                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                            </svg>
+                            Install
+                        </button>
+                    </div>
+                </div>
+            </nav>
+
+            <div className="relative z-10 mx-auto max-w-6xl px-6 pb-20 pt-14 md:pt-20">
+                <header className="mb-14 animate-fade-up">
+                    <span className="inline-flex items-center gap-2 rounded-full border border-[var(--line)] bg-[var(--surface)] px-3 py-1 text-xs font-medium text-[var(--mist)]">
+                        <span className="relative flex h-1.5 w-1.5">
+                            <span className="absolute inline-flex h-full w-full animate-pulse-ring rounded-full bg-[var(--accent)] opacity-70" />
+                            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />
+                        </span>
+                        Real-time listening rooms
+                    </span>
+                    <h1 className="brand-mark mb-5 mt-6 text-5xl font-extrabold leading-[0.95] md:text-7xl">
+                        Listen to TIDAL,
+                        <br />
+                        <span className="accent-text">perfectly in sync.</span>
                     </h1>
-                    <p className="mx-auto max-w-md text-lg font-light tracking-wide text-[var(--mist)]">
-                        Listen to TIDAL together, in sync
+                    <p className="max-w-xl text-lg leading-relaxed text-[var(--mist)]">
+                        Create a room, share the code, and stay locked to the same beat as your friends —
+                        no matter where they are.
                     </p>
-                    <button
-                        onClick={() => setShowInstall(true)}
-                        className="mt-5 inline-flex items-center gap-2 rounded-full bg-[rgba(255,92,134,0.15)] px-5 py-2 text-sm font-medium text-[var(--accent)] ring-1 ring-[rgba(255,92,134,0.28)] transition-all hover:bg-[rgba(255,92,134,0.25)] hover:ring-[rgba(255,92,134,0.5)]"
-                    >
-                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                        </svg>
-                        Install Plugin
-                    </button>
+                    <div className="mt-7 flex flex-wrap items-center gap-3">
+                        <button
+                            onClick={() => setShowInstall(true)}
+                            className="btn-accent inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm"
+                        >
+                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                            </svg>
+                            Install the plugin
+                        </button>
+                        <a
+                            href="#rooms"
+                            className="btn-ghost inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-medium"
+                        >
+                            Browse active rooms
+                        </a>
+                    </div>
                 </header>
 
                 {!selectedRoom && (
@@ -777,7 +819,7 @@ export function Dashboard() {
                     />
                 )}
 
-                <section>
+                <section id="rooms" className="scroll-mt-24">
                     {selectedRoom ? (
                         <RoomDetailView roomId={selectedRoom} onBack={() => setSelectedRoom(null)} />
                     ) : (
