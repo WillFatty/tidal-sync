@@ -81,7 +81,6 @@ const handleMessage = (client: SyncClient, raw: string) => {
 
         case "join": {
             const joinedRoom = joinRoom(msg.roomId, client);
-            if (!room) break;
             if (!joinedRoom) {
                 send(client.ws, { type: "error", error: `Room ${msg.roomId} not found` });
                 return;
