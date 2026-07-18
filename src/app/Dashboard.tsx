@@ -572,7 +572,7 @@ function InstallModal({ onClose }: { onClose: () => void }) {
                 <>
                     <p>
                         In TidaLuna open{" "}
-                        <span className="font-medium text-[var(--foam)]">Settings → Plugin Store</span>{" "}
+                        <span className="font-medium text-[var(--foam)]">Luna Settings → Plugin Store</span>{" "}
                         and add this store URL:
                     </p>
                     <CopyField value="https://github.com/WillFatty/luna-plugins/releases/download/latest/store.json" />
