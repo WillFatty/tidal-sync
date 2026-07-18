@@ -7,7 +7,7 @@
         "dev": "concurrently \"tsx watch src/server/index.ts\" \"next dev -p 3000\"",
         "dev:server": "tsx watch src/server/index.ts",
         "dev:web": "next dev -p 3000",
-        "build": "tsc -p tsconfig.server.json && next build",
+        "build": "next build",
         "start": "node start.mjs"
     },
     "dependencies": {
