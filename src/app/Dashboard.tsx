@@ -462,37 +462,26 @@ function StatusStrip({
     fetchTime: number;
 }) {
     const items = [
-        { label: "Status", value: isOnline ? "Online" : "Offline", live: true },
-        { label: "Active rooms", value: String(rooms) },
+        { label: "Rooms", value: String(rooms) },
         { label: "Listeners", value: String(listeners) },
-        ...(isOnline
-            ? [
-                  { label: "Uptime", value: formatUptime(uptime) },
-                  { label: "Ping", value: `${fetchTime}ms` },
-              ]
-            : []),
+        ...(isOnline ? [{ label: "Uptime", value: formatUptime(uptime) }] : []),
     ];
 
     return (
-        <div className="animate-fade-up stagger-2 mb-16 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+        <div className="animate-fade-up stagger-2 mb-14 flex flex-wrap items-center gap-x-8 gap-y-3 text-sm">
+            <span className="flex items-center gap-2">
+                <span
+                    className={`h-2 w-2 rounded-full ${
+                        isOnline ? "bg-[var(--success)]" : "bg-[var(--danger)]"
+                    }`}
+                />
+                <span className="text-[var(--mist)]">{isOnline ? "Online" : "Offline"}</span>
+            </span>
             {items.map((item) => (
-                <div key={item.label} className="surface rounded-2xl px-5 py-4">
-                    <div className="mb-2 text-[11px] uppercase tracking-[0.16em] text-[var(--muted)]">
-                        {item.label}
-                    </div>
-                    <div className="flex items-center gap-2">
-                        {item.live && (
-                            <span
-                                className={`h-2 w-2 rounded-full ${
-                                    isOnline ? "bg-[var(--success)]" : "bg-[var(--danger)]"
-                                }`}
-                            />
-                        )}
-                        <span className="text-xl font-semibold tabular-nums text-[var(--foam)]">
-                            {item.value}
-                        </span>
-                    </div>
-                </div>
+                <span key={item.label} className="flex items-center gap-2">
+                    <span className="font-semibold tabular-nums text-[var(--foam)]">{item.value}</span>
+                    <span className="text-[var(--muted)]">{item.label}</span>
+                </span>
             ))}
         </div>
     );
@@ -735,8 +724,6 @@ export function Dashboard() {
 
     return (
         <div className="relative min-h-screen">
-            <div className="grid-field" aria-hidden />
-
             <nav className="nav-bar sticky top-0 z-40">
                 <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3.5">
                     <div className="flex items-center gap-2.5">
@@ -772,42 +759,19 @@ export function Dashboard() {
                 </div>
             </nav>
 
-            <div className="relative z-10 mx-auto max-w-6xl px-6 pb-20 pt-14 md:pt-20">
-                <header className="mb-14 animate-fade-up">
-                    <span className="inline-flex items-center gap-2 rounded-full border border-[var(--line)] bg-[var(--surface)] px-3 py-1 text-xs font-medium text-[var(--mist)]">
-                        <span className="relative flex h-1.5 w-1.5">
-                            <span className="absolute inline-flex h-full w-full animate-pulse-ring rounded-full bg-[var(--accent)] opacity-70" />
-                            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />
-                        </span>
-                        Real-time listening rooms
-                    </span>
-                    <h1 className="brand-mark mb-5 mt-6 text-5xl font-extrabold leading-[0.95] md:text-7xl">
-                        Listen to TIDAL,
-                        <br />
-                        <span className="accent-text">perfectly in sync.</span>
-                    </h1>
-                    <p className="max-w-xl text-lg leading-relaxed text-[var(--mist)]">
-                        Create a room, share the code, and stay locked to the same beat as your friends —
-                        no matter where they are.
-                    </p>
-                    <div className="mt-7 flex flex-wrap items-center gap-3">
-                        <button
-                            onClick={() => setShowInstall(true)}
-                            className="btn-accent inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm"
-                        >
-                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                            </svg>
-                            Install the plugin
-                        </button>
-                        <a
-                            href="#rooms"
-                            className="btn-ghost inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-medium"
-                        >
-                            Browse active rooms
-                        </a>
-                    </div>
-                </header>
+            <div className="relative z-10 mx-auto max-w-5xl px-6 pb-20 pt-16 md:pt-24">
+                {!selectedRoom && (
+                    <header className="mb-16 animate-fade-up">
+                        <h1 className="brand-mark mb-5 text-5xl font-extrabold leading-[0.95] md:text-7xl">
+                            Listen to TIDAL,
+                            <br />
+                            <span className="accent-text">perfectly in sync.</span>
+                        </h1>
+                        <p className="max-w-lg text-lg leading-relaxed text-[var(--mist)]">
+                            Create a room, share the code, and stay locked to the same beat as your friends.
+                        </p>
+                    </header>
+                )}
 
                 {!selectedRoom && (
                     <StatusStrip
