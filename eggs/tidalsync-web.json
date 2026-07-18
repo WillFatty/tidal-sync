@@ -1,0 +1,73 @@
+{
+    "_comment": "DO NOT EDIT: FILE GENERATED AUTOMATICALLY BY PANEL",
+    "meta": {
+        "version": "PTDL_v2",
+        "update_url": null
+    },
+    "exported_at": "2026-07-18T17:00:00+00:00",
+    "name": "TidalSync Web",
+    "author": "will@fatty.dev",
+    "description": "TidalSync Next.js dashboard. Assign one allocation port. Set WS_SERVER to your TidalSync Server URL.",
+    "features": null,
+    "docker_images": {
+        "Nodejs 22": "ghcr.io/parkervcp/yolks:nodejs_22",
+        "Nodejs 20": "ghcr.io/parkervcp/yolks:nodejs_20"
+    },
+    "file_denylist": [],
+    "startup": "if [[ -d .git ]] && [[ \"{{AUTO_UPDATE}}\" == \"1\" ]]; then echo \"Pulling latest...\"; git pull --ff-only || true; fi; echo \"Installing dependencies...\"; npm install --include=dev; echo \"Building web...\"; npm run build:web; echo \"Starting TidalSync web on port {{SERVER_PORT}}...\"; export HOSTNAME=0.0.0.0; export PORT={{SERVER_PORT}}; exec npx next start -H 0.0.0.0 -p {{SERVER_PORT}}",
+    "config": {
+        "files": "{}",
+        "startup": "{\r\n    \"done\": [\r\n        \"Ready\"\r\n    ]\r\n}",
+        "logs": "{}",
+        "stop": "^C"
+    },
+    "scripts": {
+        "installation": {
+            "script": "#!/bin/bash\r\nset -e\r\ncd /mnt/server\r\n\r\necho \"Updating packages...\"\r\napt-get update -y\r\napt-get install -y git curl ca-certificates\r\n\r\ngit config --global --add safe.directory /mnt/server || true\r\n\r\nif [ \"$(ls -A /mnt/server 2>/dev/null)\" ]; then\r\n    if [ -d .git ]; then\r\n        ORIGIN=$(git config --get remote.origin.url || true)\r\n        if [ \"${ORIGIN}\" = \"${GIT_ADDRESS}\" ]; then\r\n            echo \"Existing repo matches — pulling...\"\r\n            git fetch --all\r\n            if [ -n \"${GIT_BRANCH}\" ]; then\r\n                git checkout \"${GIT_BRANCH}\" || true\r\n                git pull --ff-only origin \"${GIT_BRANCH}\" || git pull --ff-only || true\r\n            else\r\n                git pull --ff-only || true\r\n            fi\r\n        else\r\n            echo \"Directory not empty and remote mismatch — leaving files as-is.\"\r\n        fi\r\n    else\r\n        echo \"Directory not empty (no .git) — leaving files as-is.\"\r\n    fi\r\nelse\r\n    echo \"Cloning ${GIT_ADDRESS}...\"\r\n    if [ -z \"${GIT_BRANCH}\" ]; then\r\n        git clone --depth 1 \"${GIT_ADDRESS}\" .\r\n    else\r\n        git clone --depth 1 --single-branch --branch \"${GIT_BRANCH}\" \"${GIT_ADDRESS}\" .\r\n    fi\r\nfi\r\n\r\nif [ ! -f package.json ]; then\r\n    echo \"ERROR: package.json not found after install\"\r\n    exit 1\r\nfi\r\n\r\necho \"Installing npm packages (including build tools)...\"\r\nnpm install --include=dev\r\n\r\necho \"Building Next.js app...\"\r\nnpm run build:web\r\n\r\necho \"-----------------------------------------\"\r\necho \"TidalSync Web install complete\"\r\necho \"-----------------------------------------\"\r\nexit 0",
+            "container": "node:22-bookworm-slim",
+            "entrypoint": "bash"
+        }
+    },
+    "variables": [
+        {
+            "name": "Git Repo Address",
+            "description": "Git repository URL to clone.",
+            "env_variable": "GIT_ADDRESS",
+            "default_value": "https://github.com/WillFatty/tidal-sync",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|string",
+            "field_type": "text"
+        },
+        {
+            "name": "Git Branch",
+            "description": "Branch to clone. Leave empty for the repo default branch.",
+            "env_variable": "GIT_BRANCH",
+            "default_value": "master",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string",
+            "field_type": "text"
+        },
+        {
+            "name": "Auto Update",
+            "description": "Pull the latest git changes on every startup (1 = yes, 0 = no).",
+            "env_variable": "AUTO_UPDATE",
+            "default_value": "1",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|string|in:0,1",
+            "field_type": "text"
+        },
+        {
+            "name": "WS Server URL",
+            "description": "Base URL of the TidalSync WebSocket/API server (no trailing path).",
+            "env_variable": "WS_SERVER",
+            "default_value": "https://tidalsyncapi.hexium.cc",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|string|url",
+            "field_type": "text"
+        }
+    ]
+}

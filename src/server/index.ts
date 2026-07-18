@@ -10,7 +10,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const PUBLIC_DIR = join(__dirname, "../../public");
 
-const PORT = parseInt(process.env.PORT || "24124", 10);
+const PORT = parseInt(process.env.PORT || process.env.SERVER_PORT || "24124", 10);
 
 const MIME_TYPES: Record<string, string> = {
     ".html": "text/html; charset=utf-8",
