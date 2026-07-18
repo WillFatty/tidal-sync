@@ -136,7 +136,3 @@ Eggs live in [`eggs/`](./eggs):
 | `npm run build:web` | `next build` |
 | `npm run start:server` | Run compiled WS server |
 | `npm run start:web` | Run Next production server |
-
-## License
-
-Private / as declared by the repository owner.
